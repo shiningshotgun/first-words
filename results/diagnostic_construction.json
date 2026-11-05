@@ -1,0 +1,62 @@
+{
+  "config": {
+    "seed": 0,
+    "num_sequences": 200,
+    "sequence_length_T": 256,
+    "trigger_count_K": 3,
+    "dimension_d": 128,
+    "vocab_size_N": 65,
+    "pi_o": "uniform",
+    "rescale_definition": "Rescale factor r multiplies W_K1 and W_K2 via scale_k1 and scale_k2"
+  },
+  "evaluated_tokens": 8182,
+  "probes": {
+    "recall_W_K2_star": 1.0,
+    "recall_W_O2_star": 1.0,
+    "kl_W_F_star": 2.6113181114196777
+  },
+  "baseline_init": {
+    "description": "Model at init with disable_attn=True (no construction applied)",
+    "accuracy": 0.012833048589527607,
+    "accuracy_pct": 1.2833048589527607
+  },
+  "baseline_wf_star": {
+    "description": "Analytic W_F* with disable_attn=True (session 1 reference)",
+    "accuracy": 0.020410656929016113,
+    "accuracy_pct": 2.0410656929016113
+  },
+  "full_construction": [
+    {
+      "rescale_factor": 1,
+      "accuracy": 0.042532388120889664,
+      "accuracy_pct": 4.253238812088966
+    },
+    {
+      "rescale_factor": 3,
+      "accuracy": 0.04485455900430679,
+      "accuracy_pct": 4.485455900430679
+    },
+    {
+      "rescale_factor": 10,
+      "accuracy": 0.049987778067588806,
+      "accuracy_pct": 4.998777806758881
+    }
+  ],
+  "attention_only": [
+    {
+      "rescale_factor": 1,
+      "accuracy": 0.2946712374687195,
+      "accuracy_pct": 29.46712374687195
+    },
+    {
+      "rescale_factor": 3,
+      "accuracy": 0.4137130379676819,
+      "accuracy_pct": 41.37130379676819
+    },
+    {
+      "rescale_factor": 10,
+      "accuracy": 0.4672451615333557,
+      "accuracy_pct": 46.72451615333557
+    }
+  ]
+}

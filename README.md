@@ -51,16 +51,20 @@ All measurements were obtained on local compute using the detected GPU accelerat
 
 ### Gate B2 Construction Diagnostic Table (200 sequences)
 
-Output-token accuracy from second occurrence on analytic Equation 7/8 weights:
+Output-token accuracy from second occurrence on analytic Equation 7/8 weights. Reproducible numbers and full configuration are recorded in [`results/diagnostic_construction.json`](results/diagnostic_construction.json):
 
 | Configuration | Output Accuracy | Evaluated Tokens |
 |---|---|---|
-| Attention Disabled Baseline | 2.04% | 8,182 |
-| Rescaling Factor 1 | 4.25% | 8,182 |
-| Rescaling Factor 3 | 4.49% | 8,182 |
-| Rescaling Factor 10 | 5.00% | 8,182 |
+| (a) Baseline (Init, Attention Disabled) | 1.28% | 8,182 |
+| *[Auxiliary Baseline: $W_F^*$ Attention Disabled]* | *2.04%* | *8,182* |
+| (b) Full Construction (Rescaling Factor 1) | 4.25% | 8,182 |
+| (b) Full Construction (Rescaling Factor 3) | 4.49% | 8,182 |
+| (b) Full Construction (Rescaling Factor 10) | 5.00% | 8,182 |
+| (c) Attention-Only ($W_F = 0$, Rescaling Factor 1) | 29.47% | 8,182 |
+| (c) Attention-Only ($W_F = 0$, Rescaling Factor 3) | 41.37% | 8,182 |
+| (c) Attention-Only ($W_F = 0$, Rescaling Factor 10) | 46.72% | 8,182 |
 
-*(Note: For attention alone without $W_F$, accuracies measure 25.17%, 36.94%, and 47.50% respectively. At $d = 128$, cross-talk from random-embedding inner products $\sim 1/\sqrt{d}$ across $N = 65$ and $T = 256$ interacts with the unnormalized log-probability scale of $W_F$.)*
+*(Note: These are finite-$d$ construction diagnostic numbers. At $d = 128$, cross-talk from random-embedding inner products $\sim 1/\sqrt{d}$ across $N = 65$ and $T = 256$ interacts with the unnormalized log-probability scale of $W_F$. Detailed metrics and probes on the construction are stored in `results/diagnostic_construction.json`.)*
 
 ## Explicit Predeclared Deviations & Recorded Choices
 
@@ -97,8 +101,11 @@ Output-token accuracy from second occurrence on analytic Equation 7/8 weights:
 ├── figures/
 │   ├── milestones.png         # Losses, accuracy, and probe curves
 │   └── autopsy.png            # Weight autopsy heatmaps vs Eq 7/8 targets
+├── results/
+│   └── diagnostic_construction.json # Reproducible construction diagnostic data
 ├── src/
 │   ├── data.py                # Corpus loading, Laplace smoothing, batch generator
+│   ├── diagnostic_construction.py # Reproducible construction evaluation script
 │   ├── model.py               # SimplifiedTransformer and analytic construction
 │   ├── probes.py              # Eq 9 recall probes and Eq 10 KL probe
 │   ├── train.py               # Pilot and 1000-step training loop
@@ -124,10 +131,13 @@ PYTHONPATH=. python3 src/train.py --pilot
 # 3. Run Main Training Run (1000 iterations, seed 0)
 PYTHONPATH=. python3 src/train.py --main --seed 0 --iters 1000 --batch-size 512
 
-# 4. Regenerate milestones figure
+# 4. Run Reproducible Construction Diagnostic
+PYTHONPATH=. python3 src/diagnostic_construction.py
+
+# 5. Regenerate milestones figure
 PYTHONPATH=. python3 src/figures.py --milestones
 
-# 5. Regenerate autopsy figure
+# 6. Regenerate autopsy figure
 PYTHONPATH=. python3 src/figures.py --autopsy
 ```
 

@@ -101,14 +101,13 @@ def plot_milestones(
     ax.text(
         0.55, 0.75,
         f"Measured Final KL: {data['kl_W_F'][-1]:.3f} nats\n"
-        f"Paper Plateau: ~2.07 nats\n"
-        f"(Rapid learning in <= 50 iters)",
+        f"Paper Plateau: ~2.07 nats",
         transform=ax.transAxes,
         fontsize=9,
         bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="gray", alpha=0.8),
     )
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.tight_layout(rect=[0, 0.03, 1, 0.94])
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     plt.savefig(out_path, dpi=200)
     plt.close()
@@ -127,14 +126,13 @@ def plot_autopsy(
     d = 128
     T = 256
 
+    if not os.path.exists(checkpoint_path):
+        raise FileNotFoundError(f"Checkpoint not found at '{checkpoint_path}'. Cannot plot autopsy from untrained weights.")
+
     model = SimplifiedTransformer(d=d, N=N, T=T, seed=0)
-    if os.path.exists(checkpoint_path):
-        ckpt = torch.load(checkpoint_path, map_location="cpu")
-        model.load_state_dict(ckpt["model_state_dict"])
-        step = ckpt.get("step", 1000)
-    else:
-        print(f"Warning: {checkpoint_path} not found; using current model parameters.")
-        step = 0
+    ckpt = torch.load(checkpoint_path, map_location="cpu")
+    model.load_state_dict(ckpt["model_state_dict"])
+    step = ckpt.get("step", 1000)
 
     sol = build_constructed_solution(model, pi_b)
 
@@ -167,8 +165,9 @@ def plot_autopsy(
     fig.suptitle(
         f"Weight Autopsy: Learned Matrices (Iter {step}, Seed 0) vs. Analytic Targets (Eq 7 & 8)\n"
         f"Measured Recall(W_O2): {recall_wo2_learned*100:.1f}% vs Target: {recall_wo2_target*100:.1f}% | "
-        f"Measured KL(W_F, pi_b): {kl_wf_learned:.3f} vs Target: {kl_wf_target:.3f} nats",
-        fontsize=13,
+        f"Measured KL(W_F, pi_b): {kl_wf_learned:.3f} vs Target: {kl_wf_target:.3f} nats\n"
+        "Panel colorbars are independent; magnitudes are not visually comparable across panels.",
+        fontsize=12,
         fontweight="bold",
         y=0.98,
     )
@@ -189,7 +188,7 @@ def plot_autopsy(
     im1 = axes[0, 1].imshow(M_wo2_target, cmap="viridis", aspect="auto")
     axes[0, 1].set_title(
         f"Analytic Target $W_{{O2}}^*$ Projections (Eq 7)\n"
-        f"Target Recall: {recall_wo2_target*100:.1f}% (Ideal Identity Diagonal)",
+        f"Target Recall: {recall_wo2_target*100:.1f}% (finite-d projection, not an identity matrix)",
         fontweight="bold",
         fontsize=10,
     )
@@ -221,7 +220,7 @@ def plot_autopsy(
     axes[1, 1].set_ylabel("Next Token Index j")
     fig.colorbar(im3, ax=axes[1, 1], fraction=0.046, pad=0.04)
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.tight_layout(rect=[0, 0.03, 1, 0.94])
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     plt.savefig(out_path, dpi=200)
     plt.close()
