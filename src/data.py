@@ -56,13 +56,17 @@ class SyntheticBigramDataset:
         pi_b: np.ndarray,
         T: int = 256,
         K: int = 3,
+        fixed_triggers: Optional[List[int]] = None,
+        pi_o: str = "uniform",
         seed: Optional[int] = None,
     ):
         self.pi_u = pi_u
         self.pi_b = pi_b
         self.N = len(pi_u)
         self.T = T
-        self.K = K
+        self.fixed_triggers = list(fixed_triggers) if fixed_triggers is not None else None
+        self.K = len(self.fixed_triggers) if self.fixed_triggers is not None else K
+        self.pi_o = pi_o
         self.rng = np.random.default_rng(seed)
         self.pi_u_cdf = np.cumsum(pi_u)
         self.pi_b_cdf = np.cumsum(pi_b, axis=1)
@@ -88,12 +92,28 @@ class SyntheticBigramDataset:
         K = self.K
         N = self.N
 
-        # Sample K triggers per sequence without replacement from pi_u
         trigs = np.zeros((B, K), dtype=np.int64)
         outs = np.zeros((B, K), dtype=np.int64)
-        for b in range(B):
-            trigs[b] = r.choice(N, size=K, replace=False, p=self.pi_u)
-            outs[b] = r.choice(N, size=K, replace=True)
+
+        if self.fixed_triggers is not None:
+            trigs[:] = self.fixed_triggers
+            if self.pi_o == "bigram":
+                for b in range(B):
+                    for k in range(K):
+                        outs[b, k] = r.choice(N, p=self.pi_b[trigs[b, k]])
+            else:
+                for b in range(B):
+                    outs[b] = r.choice(N, size=K, replace=True)
+        else:
+            if self.pi_o == "bigram":
+                for b in range(B):
+                    trigs[b] = r.choice(N, size=K, replace=False, p=self.pi_u)
+                    for k in range(K):
+                        outs[b, k] = r.choice(N, p=self.pi_b[trigs[b, k]])
+            else:
+                for b in range(B):
+                    trigs[b] = r.choice(N, size=K, replace=False, p=self.pi_u)
+                    outs[b] = r.choice(N, size=K, replace=True)
 
         rand_u = r.random((B, T))
         seqs = np.zeros((B, T), dtype=np.int64)

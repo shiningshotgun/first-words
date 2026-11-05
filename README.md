@@ -66,6 +66,46 @@ Output-token accuracy from second occurrence on analytic Equation 7/8 weights. R
 
 *(Note: These are finite-$d$ construction diagnostic numbers. At $d = 128$, cross-talk from random-embedding inner products $\sim 1/\sqrt{d}$ across $N = 65$ and $T = 256$ interacts with the unnormalized log-probability scale of $W_F$. Detailed metrics and probes on the construction are stored in `results/diagnostic_construction.json`.)*
 
+## Figure 4 Variants (Session 3)
+
+We reproduced the empirical variants from **Appendix E, Figure 4** covering fixed trigger dynamics (Figure 4 left) and output token distribution shifts (Figure 4 center):
+- **Run Main**: Baseline ($K=3$, random triggers $\pi_q = \pi_u$, uniform outputs $\pi_o = \text{Uniform}([N])$).
+- **Run F1**: Fixed frequent trigger ($K=1$, trigger token index $Q=[1]$ corresponding to space `' '`, $\pi_o = \text{Uniform}([N])$).
+- **Run F2**: Fixed rare triggers ($K=5$, 6th to 10th most frequent tokens $Q=[46, 57, 56, 52, 47]$ corresponding to `['h', 's', 'r', 'n', 'i']`, $\pi_o = \text{Uniform}([N])$).
+- **Run C1**: Bigram output distribution ($K=3$, random triggers $\pi_q = \pi_u$, $\pi_o = \pi_b(\cdot|q)$ conditioned on trigger $q$).
+
+### Final Measured Values (Iteration 1,000, Seed 0)
+
+| Metric | Main ($K=3$, Rand, $\pi_o=\text{U}$) | F1 ($K=1$, Freq, $\pi_o=\text{U}$) | F2 ($K=5$, Rare, $\pi_o=\text{U}$) | C1 ($K=3$, Rand, $\pi_o=\pi_b$) | Paper Reference Reads |
+|---|---|---|---|---|---|
+| **Global Loss** | 2.740 nats | 2.601 nats | 2.693 nats | 2.674 nats | ~2.65–2.75 nats |
+| **In-Context Loss** | 2.609 nats | 0.255 nats | 2.581 nats | 1.116 nats | F1: ~0.25; F2/Main: ~2.5–2.6; C1: ~1.1 |
+| **In-Context Accuracy** | 49.3% | 97.5% | 42.1% | 74.4% | F1: ~97%; F2: ~40–45%; C1: ~70–75% |
+| **$W_{O2}$ Memory Recall** | 66.2% | 70.8% | 40.0% | 29.2% | Main: ~68%; F2: suppressed; C1: ~30% |
+| **$W_{K2}$ Memory Recall (all)** | 20.0% | 1.5% | 12.3% | 15.4% | Main: ~22% |
+| **$W_{K2}(Q)$ Recall (triggers)** | — | 100.0% | 100.0% | — | Full alignment on fixed trigger subset |
+| **$W_{K1}$ ($t < 64$) Recall** | 41.3% | 39.7% | 28.6% | 47.6% | ~30–50% across configurations |
+| **$W_F$ KL Divergence** | 2.062 nats | 2.067 nats | 2.046 nats | 2.165 nats | ~2.07 nats plateau |
+
+### Out-of-Distribution (OOD) 2x2 Evaluation Matrix
+
+Evaluated on 200 fresh test sequences ($T=256$, seed 0) comparing models trained with uniform outputs ($\pi_o = \text{Uniform}$) vs bigram outputs ($\pi_o = \pi_b$):
+
+| Training Distribution \ Test Distribution | Test: Uniform $\pi_o = \text{Uniform}$ | Test: Bigram $\pi_o = \pi_b$ |
+|---|---|---|
+| **Train: Uniform $\pi_o = \text{Uniform}$** (Main) | **51.92%** (8,182 tokens) | **66.59%** (9,946 tokens) |
+| **Train: Bigram $\pi_o = \pi_b$** (C1) | **32.45%** (8,182 tokens) | **70.01%** (9,946 tokens) |
+
+### Findings and Paper Comparison
+
+1. **Figure 4 (left) - Fixed Trigger Dynamics (Match)**:
+   - **$K=1$ Fixed Frequent Trigger (F1)**: Rapidly drops in-context loss to 0.255 nats within 100 iterations, reaching 97.49% in-context accuracy and 70.77% $W_{O2}$ recall. The attention key matrix aligns completely with the single trigger ($W_{K2}(Q) = 100.0\%$). This matches the paper's fast convergence curve in Figure 4 (left).
+   - **$K=5$ Fixed Rare Triggers (F2)**: Shows delayed and slower learning, reaching 42.07% in-context accuracy at iteration 1,000 with in-context loss at 2.581 nats. $W_{O2}$ recall reaches only 40.00%. This matches the paper's observation that rare triggers delay second-layer memory formation.
+2. **Figure 4 (center) - Generalization Asymmetry (Match)**:
+   - When trained on bigram outputs (C1), in-distribution accuracy reaches 70.01% due to alignment with the bigram prior $\pi_b$. However, under distribution shift to uniform outputs, accuracy collapses to 32.45% (-37.56% drop).
+   - In contrast, training on uniform outputs (Main) yields robust in-context induction that generalizes across output distributions: 51.92% on uniform test data and 66.59% on bigram test data (+14.67%).
+   - Furthermore, uniform output training drives substantially stronger second-layer memory formation ($W_{O2}$ recall of 66.15% vs 29.23% for bigram outputs), matching the paper's analysis in Figure 6 and page 27 that uninformative output targets force the model to develop associative memory mechanisms.
+
 ## Explicit Predeclared Deviations & Recorded Choices
 
 1. **Add-One (Laplace) Smoothing Convention**:
@@ -100,9 +140,12 @@ Output-token accuracy from second occurrence on analytic Equation 7/8 weights. R
 ├── .github/workflows/ci.yml   # GitHub Actions CI running unit tests
 ├── figures/
 │   ├── milestones.png         # Losses, accuracy, and probe curves
-│   └── autopsy.png            # Weight autopsy heatmaps vs Eq 7/8 targets
+│   ├── autopsy.png            # Weight autopsy heatmaps vs Eq 7/8 targets
+│   ├── fig4_left.png          # Figure 4 (left) fixed triggers vs random
+│   └── fig4_center.png        # Figure 4 (center) output distribution & OOD
 ├── results/
-│   └── diagnostic_construction.json # Reproducible construction diagnostic data
+│   ├── diagnostic_construction.json # Reproducible construction diagnostic data
+│   └── fig4_variants.json     # Figure 4 variants metrics, OOD matrix, and trajectories
 ├── src/
 │   ├── data.py                # Corpus loading, Laplace smoothing, batch generator
 │   ├── diagnostic_construction.py # Reproducible construction evaluation script
@@ -112,7 +155,8 @@ Output-token accuracy from second occurrence on analytic Equation 7/8 weights. R
 │   └── figures.py             # Matplotlib reproduction plotting scripts
 ├── tests/
 │   ├── test_generator.py      # Gate A exact and statistical validation
-│   └── test_construction.py   # Gate B1 structural checks
+│   ├── test_construction.py   # Gate B1 structural checks
+│   └── test_probes.py         # Probes and Figure 4 variant tests
 ├── LICENSE                    # MIT License (original code only)
 └── README.md
 ```
@@ -122,7 +166,7 @@ Output-token accuracy from second occurrence on analytic Equation 7/8 weights. R
 Run all commands from the repository root:
 
 ```bash
-# 1. Run unit test suite (Gate A and Gate B1)
+# 1. Run unit test suite (Gate A, Gate B1, probes, and data variants)
 PYTHONPATH=. python3 -m unittest discover -s tests
 
 # 2. Run Gate C Pilot (20 iterations)
@@ -139,6 +183,15 @@ PYTHONPATH=. python3 src/figures.py --milestones
 
 # 6. Regenerate autopsy figure
 PYTHONPATH=. python3 src/figures.py --autopsy
+
+# 7. Run Figure 4 variants evaluation and plot generation
+PYTHONPATH=. python3 src/figures.py --fig4-variants
+
+# 8. Regenerate Figure 4 left plot
+PYTHONPATH=. python3 src/figures.py --fig4-left
+
+# 9. Regenerate Figure 4 center plot
+PYTHONPATH=. python3 src/figures.py --fig4-center
 ```
 
 ## Explicit Not-Reproduced List (Open Follow-ups)
@@ -146,5 +199,5 @@ PYTHONPATH=. python3 src/figures.py --autopsy
 The following experiments from the paper were not part of this scoped slice and remain open for future work:
 1. **Vanilla Transformer Attention Maps (Section 3 & Figure 2)**: 2-layer transformer with multi-head attention and MLP feedforward blocks.
 2. **Freeze-Schedule Ablations (Figure 3)**: Selectively freezing attention matrices $W_{O2}, W_{K2}, W_{K1}$ until iteration 300.
-3. **Data-Distribution Variants (Figure 4 left & center, Figure 5, Figure 6)**: Fixed vs random triggers, varying trigger count $K \in \{1, 5\}$, rare vs frequent triggers, and output token distribution shifts ($\pi_o = \pi_b$).
-4. **Multi-Seed Distribution & Error Bars**: Empirical variance across multiple random seeds and initializations.
+3. **Additional Architecture / Context-Length Scaling (Figure 5, Figure 6 extended)**: Scaling sequence lengths $T > 256$, varying dimensions $d$, and multi-seed spread.
+*(Note: Figure 4 left fixed vs random triggers and Figure 4 center output distribution shifts have been executed and their measured outcomes recorded in this repository.)*

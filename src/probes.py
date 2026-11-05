@@ -1,6 +1,6 @@
 """Probes for memory recall (eq 9) and KL divergence (eq 10)."""
 
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -41,11 +41,14 @@ def compute_w_k2_recall(
     w_E: torch.Tensor,
     W_O1: torch.Tensor,
     W_V1: torch.Tensor,
+    subset_Q: Optional[List[int]] = None,
 ) -> float:
     """Compute recall probe (eq 9) for induction key-query matrix W_K2.
     
     Target memory: W* = sum_{k in Q} v_k u_k^T where u_k = W_O1 W_V1 w_E(k), v_k = w_E(k).
     Probe: 1/N sum_k 1{argmax_{k'} w_E(k')^T W u_k = k}.
+    If subset_Q is provided, recall is computed only over keys k in Q (the paper notes
+    this restriction is an easier task for fixed triggers).
     """
     N = w_E.shape[0]
     # u_k = W_O1 @ W_V1 @ w_E[k]  shape: (N, d)
@@ -56,6 +59,10 @@ def compute_w_k2_recall(
     S = torch.matmul(torch.matmul(w_E, W_K2), u_k.t())
     targets = torch.arange(N, device=w_E.device)
     preds = S.argmax(dim=0)
+
+    if subset_Q is not None:
+        Q_tensor = torch.tensor(subset_Q, dtype=torch.long, device=w_E.device)
+        return (preds[Q_tensor] == targets[Q_tensor]).float().mean().item()
     return (preds == targets).float().mean().item()
 
 
@@ -109,6 +116,7 @@ def compute_w_f_kl(
 def evaluate_all_probes(
     model: SimplifiedTransformer,
     pi_b: np.ndarray,
+    fixed_triggers: Optional[List[int]] = None,
 ) -> Dict[str, float]:
     """Evaluate all memory recall and KL probes on the current model parameters."""
     with torch.no_grad():
@@ -117,11 +125,19 @@ def evaluate_all_probes(
         w_k2 = compute_w_k2_recall(model.W_K2, model.w_E, model.W_O1, model.W_V1)
         w_o2 = compute_w_o2_recall(model.W_O2, model.w_E, model.w_U, model.W_V2)
         w_f_kl = compute_w_f_kl(model.W_F, model.w_E, model.w_U, pi_b)
+        w_k2_q = (
+            compute_w_k2_recall(model.W_K2, model.w_E, model.W_O1, model.W_V1, subset_Q=fixed_triggers)
+            if fixed_triggers is not None
+            else None
+        )
 
-    return {
+    res = {
         "recall_W_K1": float(w_k1_all),
         "recall_W_K1_early": float(w_k1_early),
         "recall_W_K2": float(w_k2),
         "recall_W_O2": float(w_o2),
         "kl_W_F": float(w_f_kl),
     }
+    if w_k2_q is not None:
+        res["recall_W_K2_Q"] = float(w_k2_q)
+    return res

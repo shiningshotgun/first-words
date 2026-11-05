@@ -116,6 +116,58 @@ class TestGeneratorGateA(unittest.TestCase):
                         f"Trigger {q} output {j} failed: dev={dev:.3f} > 4.9",
                     )
 
+    def test_regression_default_generator_seed0(self):
+        """Regression: default generator path (seed 0, 512 seqs) bit-identical to pre-change reference."""
+        import hashlib
+        dataset = SyntheticBigramDataset(self.pi_u, self.pi_b, T=256, K=3, seed=0)
+        batch = dataset.sample_batch(512)
+        h_seqs = hashlib.sha256(batch["seqs"].numpy().tobytes()).hexdigest()
+        h_trigs = hashlib.sha256(batch["triggers"].numpy().tobytes()).hexdigest()
+        h_outs = hashlib.sha256(batch["outputs"].numpy().tobytes()).hexdigest()
+        self.assertEqual(h_seqs, "ef47807ae2099998bcaa286b01af201aaa19633a5a8f34e64fb40fa3c80bac38")
+        self.assertEqual(h_trigs, "07b0ba830882a865226c3b899b41f3015bde3d467585cfe7df321b5605acd1c0")
+        self.assertEqual(h_outs, "8bf29678c92336a1697aa43397926983b70993e90f4f46bbaf82f711f6503e1a")
+
+    def test_fixed_triggers_mode(self):
+        """Fixed Q: every trigger-output transition uses triggers in Q with exact match."""
+        Q = [46, 57, 56, 52, 47]
+        dataset = SyntheticBigramDataset(
+            self.pi_u, self.pi_b, T=256, fixed_triggers=Q, pi_o="uniform", seed=0
+        )
+        batch = dataset.sample_batch(100)
+        trigs = batch["triggers"].numpy()
+        self.assertTrue(np.all(trigs == np.array(Q)))
+
+        seqs = batch["seqs"].numpy()
+        outs = batch["outputs"].numpy()
+        for b in range(100):
+            trig_to_out = {Q[k]: outs[b, k] for k in range(len(Q))}
+            for t in range(1, 256):
+                prev = seqs[b, t - 1]
+                if prev in trig_to_out:
+                    self.assertEqual(seqs[b, t], trig_to_out[prev])
+
+    def test_pi_o_bigram_distribution(self):
+        """pi_o='bigram': outputs depend on trigger and follow pi_b(.|q) within z=4.9 bound."""
+        # Fixed trigger 1 (space)
+        dataset = SyntheticBigramDataset(
+            self.pi_u, self.pi_b, T=256, fixed_triggers=[1], pi_o="bigram", seed=0
+        )
+        batch = dataset.sample_batch(4096)
+        outs = batch["outputs"].numpy().flatten()
+        counts = np.bincount(outs, minlength=self.N)
+        n = len(outs)
+        for j in range(self.N):
+            p = self.pi_b[1, j]
+            if n * p >= 25 and n * (1 - p) >= 25:
+                p_hat = counts[j] / n
+                dev = abs(p_hat - p) / np.sqrt(p * (1 - p) / n)
+                self.assertLessEqual(
+                    dev,
+                    4.9,
+                    f"Output {j} for trigger 1 failed: dev={dev:.3f} > 4.9",
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

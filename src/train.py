@@ -36,6 +36,8 @@ def train_run(
     d: int = 128,
     T: int = 256,
     K: int = 3,
+    fixed_triggers: Optional[list] = None,
+    pi_o: str = "uniform",
     lr: float = 1.0,
     momentum: float = 0.9,
     weight_decay: float = 1e-4,
@@ -58,7 +60,15 @@ def train_run(
     pi_u, pi_b = estimate_distributions(text, chars)
     N = len(chars)
 
-    dataset = SyntheticBigramDataset(pi_u, pi_b, T=T, K=K, seed=seed)
+    dataset = SyntheticBigramDataset(
+        pi_u,
+        pi_b,
+        T=T,
+        K=K,
+        fixed_triggers=fixed_triggers,
+        pi_o=pi_o,
+        seed=seed,
+    )
     model = SimplifiedTransformer(d=d, N=N, T=T, seed=seed).to(device)
 
     optimizer = torch.optim.SGD(
@@ -131,7 +141,7 @@ def train_run(
 
         # Probing and logging
         if (step % log_interval == 0) or (step == num_iterations - 1):
-            probes = evaluate_all_probes(model, pi_b)
+            probes = evaluate_all_probes(model, pi_b, fixed_triggers=fixed_triggers)
             log_record = {
                 "step": step,
                 "loss": float(loss_all.item()),
@@ -183,50 +193,120 @@ def train_run(
     }
 
 
+def resolve_variant_config(variant: str):
+    """Resolve trigger and output configuration for Figure 4 variants."""
+    text = load_corpus("input.txt")
+    chars, _, _ = get_vocab(text)
+    pi_u, _ = estimate_distributions(text, chars)
+    ranking = np.argsort(-pi_u)
+
+    if variant == "f1":
+        fixed_triggers = [int(ranking[0])]
+        return {
+            "variant": "f1",
+            "K": 1,
+            "fixed_triggers": fixed_triggers,
+            "pi_o": "uniform",
+            "log_file": "logs/training_log_f1.jsonl",
+            "pilot_log": "logs/pilot_log_f1.jsonl",
+            "checkpoint_dir": "checkpoints/f1",
+            "desc": f"Run F1 (K=1, fixed Q={[chars[i] for i in fixed_triggers]} {fixed_triggers}, pi_o=uniform)",
+        }
+    elif variant == "f2":
+        fixed_triggers = [int(x) for x in ranking[5:10]]
+        return {
+            "variant": "f2",
+            "K": 5,
+            "fixed_triggers": fixed_triggers,
+            "pi_o": "uniform",
+            "log_file": "logs/training_log_f2.jsonl",
+            "pilot_log": "logs/pilot_log_f2.jsonl",
+            "checkpoint_dir": "checkpoints/f2",
+            "desc": f"Run F2 (K=5, fixed Q={[chars[i] for i in fixed_triggers]} {fixed_triggers}, pi_o=uniform)",
+        }
+    elif variant == "c1":
+        return {
+            "variant": "c1",
+            "K": 3,
+            "fixed_triggers": None,
+            "pi_o": "bigram",
+            "log_file": "logs/training_log_c1.jsonl",
+            "pilot_log": "logs/pilot_log_c1.jsonl",
+            "checkpoint_dir": "checkpoints/c1",
+            "desc": "Run C1 (K=3, random triggers, pi_o=bigram)",
+        }
+    elif variant == "main":
+        return {
+            "variant": "main",
+            "K": 3,
+            "fixed_triggers": None,
+            "pi_o": "uniform",
+            "log_file": "logs/training_log.jsonl",
+            "pilot_log": "logs/pilot_log.jsonl",
+            "checkpoint_dir": "checkpoints",
+            "desc": "Main Run (K=3, random triggers, pi_o=uniform)",
+        }
+    else:
+        raise ValueError(f"Unknown variant: {variant}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Birth of a Transformer Training")
-    parser.add_argument("--pilot", action="store_true", help="Run 20-step Gate C pilot")
+    parser.add_argument("--pilot", action="store_true", help="Run 20-step pilot")
     parser.add_argument("--main", action="store_true", help="Run full 1000-step training")
+    parser.add_argument("--variant", type=str, default="main", choices=["main", "f1", "f2", "c1"], help="Experiment variant")
     parser.add_argument("--seed", type=int, default=0, help="Random seed")
     parser.add_argument("--iters", type=int, default=1000, help="Number of iterations")
     parser.add_argument("--batch-size", type=int, default=512, help="Batch size")
     args = parser.parse_args()
 
+    vcfg = resolve_variant_config(args.variant)
+
     if args.pilot:
-        print("=== Running Gate C Pilot (20 iterations, seed 0) ===")
+        print(f"=== Running Pilot (20 iterations, seed {args.seed}) for {vcfg['desc']} ===")
         res = train_run(
             num_iterations=20,
             batch_size=args.batch_size,
+            K=vcfg["K"],
+            fixed_triggers=vcfg["fixed_triggers"],
+            pi_o=vcfg["pi_o"],
             seed=args.seed,
             log_interval=5,
             checkpoint_dir=None,
-            log_file="logs/pilot_log.jsonl",
+            log_file=vcfg["pilot_log"],
             is_pilot=True,
         )
-        print("\n--- Gate C Pilot Results ---")
+        print(f"\n--- Pilot Results ({args.variant}) ---")
         print(f"Iterations per second: {res['iters_per_sec']:.2f} it/s ({res['avg_step_time_s']*1000:.1f} ms/it)")
         print(f"Projected wall time for 1000 iterations: {res['projected_1000_s']:.1f}s ({res['projected_1000_s']/60:.2f} minutes)")
         print(f"Peak memory: {res['peak_memory_mb']:.1f} MB")
         limit_s = 2 * 3600
-        print(f"Within 2-hour budget: {res['projected_1000_s'] <= limit_s}")
+        within_budget = res["projected_1000_s"] <= limit_s
+        print(f"Within 2-hour budget: {within_budget}")
+        if not within_budget:
+            raise RuntimeError(f"Pilot projected time ({res['projected_1000_s']}s) exceeds 2 hours!")
 
     elif args.main:
-        print("=== Running Main Training Run (1000 iterations, seed 0) ===")
+        print(f"=== Running Full Training (1000 iterations, seed {args.seed}) for {vcfg['desc']} ===")
         res = train_run(
             num_iterations=args.iters,
             batch_size=args.batch_size,
+            K=vcfg["K"],
+            fixed_triggers=vcfg["fixed_triggers"],
+            pi_o=vcfg["pi_o"],
             seed=args.seed,
             log_interval=5,
             checkpoint_interval=100,
-            log_file="logs/training_log.jsonl",
-            checkpoint_dir="checkpoints",
+            log_file=vcfg["log_file"],
+            checkpoint_dir=vcfg["checkpoint_dir"],
             is_pilot=False,
         )
-        print("\n--- Main Run Completed ---")
+        print(f"\n--- Full Run Completed ({args.variant}) ---")
         print(f"Total iterations: {res['num_iterations']}")
         print(f"Average speed: {res['iters_per_sec']:.2f} it/s")
         print(f"Total time: {res['projected_1000_s']:.1f}s ({res['projected_1000_s']/60:.2f} minutes)")
         print(f"Peak memory: {res['peak_memory_mb']:.1f} MB")
+        print(f"Final loss: {res['final_loss']:.4f}")
 
 
 if __name__ == "__main__":
