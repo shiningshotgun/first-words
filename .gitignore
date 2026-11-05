@@ -1,0 +1,14 @@
+# Paper and corpus
+paper.pdf
+input.txt
+
+# Logs, checkpoints, and scratch
+logs/
+checkpoints/
+work_done.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
