@@ -20,7 +20,7 @@ This report documents the reproduction of the empirical findings in Bietti et al
 
 | Arm / Configuration | $W_{O2}$ Recall | $W_{K2}$ Recall | $W_{K1}$ Recall | $W_{K1}$ Early ($t < 64$) | KL($\pi_b \parallel \text{model}$) | Notes / Rationale |
 |---|---|---|---|---|---|---|
-| **Baseline Rerun Raw-MLE** | Defined (63.08%) | Defined (18.46%) | Defined (11.37%) | Defined (46.03%) | Defined (1.3870 nats) | Full simplified model with linear FF layer. |
+| **Baseline Rerun Raw-MLE** | Defined (63.08%) | Defined (18.46%) | Defined (11.37%) | Defined (46.03%) | Defined (1.3870 nats) | Simplified model with linear FF layer (Appendix-E full model deferred). |
 | **Run F1 Raw-MLE** | Defined (70.77%) | Defined (3.08%) | Defined (9.41%) | Defined (38.10%) | Defined (1.4082 nats) | $K=1$, fixed frequent trigger `' '`. |
 | **Run F2 Raw-MLE** | Defined (40.00%) | Defined (9.23%) | Defined (8.63%) | Defined (33.33%) | Defined (1.3289 nats) | $K=5$, fixed rare triggers (ranks 6–10). |
 | **Run C1 Raw-MLE** | Defined (30.77%) | Defined (15.38%) | Defined (11.76%) | Defined (46.03%) | Defined (1.6388 nats) | Bigram outputs ($\pi_o = \pi_b$). Suppresses $W_{O2}$ memory. |
@@ -61,7 +61,7 @@ def masked_in_context_loss(pred_logits: torch.Tensor, targets: torch.Tensor, mas
     return (per_token * mask.reshape(-1).float()).sum() / mask.float().sum()
 ```
 - **Equivalence Verification**: Tested off-device on CPU across 200 random trials in float64 and float32, plus 5 full-size ($512 \times 255 \times 65$) trials. Gradients were bitwise identical (`torch.equal`) to the indexing formulation; loss values matched within $2.7 \times 10^{-15}$ (float64) and $9.5 \times 10^{-7}$ (float32). Non-finite values in masked-out tokens were verified not to propagate to loss or gradients.
-- **Rerun Outcome**: With fixed-shape execution, `freeze_wo2_rawmle` ran to completion (step 999) in 432.99s (7.22 min, 2.31 it/s) with zero memory growth. All three subsequent freeze arms (`freeze_wk1wk2_rawmle`, `freeze_wk1_rawmle`, `freeze_wk2_rawmle`) likewise completed without memory inflation.
+- **Rerun Outcome**: With fixed-shape execution, the rerun completed without an OOM; memory behavior was not measured during the successful run (the flat 310 MB RSS figure refers to the failed attempts). `freeze_wo2_rawmle` ran to completion (step 999) in 432.99s (7.22 min, 2.31 it/s). All three subsequent freeze arms (`freeze_wk1wk2_rawmle`, `freeze_wk1_rawmle`, `freeze_wk2_rawmle`) likewise completed without an OOM.
 - **What this establishes**: Completion is consistent with the variable-shape MPS graph cache hypothesis, though it does not provide a formal hardware-profiled proof.
 
 ---
