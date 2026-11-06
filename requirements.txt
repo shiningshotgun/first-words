@@ -1,0 +1,16 @@
+# Dependency record for first-words.
+#
+# This file RECORDS the environment that was actually used for the retained
+# runs (read from the local venv via importlib.metadata on 2026-11-07):
+#   Python 3.9.6
+#   torch 2.8.0
+#   numpy 2.0.2
+#   matplotlib 3.9.4
+#
+# IMPORTANT: this is an environment record, NOT a tested fresh-install
+# recipe or lockfile. The retained runs used the MPS backend, which is not
+# bitwise-deterministic; no CPU/CUDA parity is claimed or recorded.
+
+torch==2.8.0
+numpy==2.0.2
+matplotlib==3.9.4

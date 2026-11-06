@@ -2,6 +2,10 @@
 
 This repository reproduces the main empirical configuration of **Bietti et al. (NeurIPS 2023)**, *"Birth of a Transformer: A Memory Viewpoint"* ([arXiv:2306.00802](https://arxiv.org/abs/2306.00802)).
 
+- [Paper versus this study](paper_vs_study.md): side-by-side comparison of configurations, metrics, and scope.
+- [Third-party notices](THIRD_PARTY_NOTICES.md): corpus and upstream code attribution.
+- [What this taught me](what_this_taught_me.md): technical retrospective and implementation takeaways.
+
 ## Scope of this Reproduction
 
 This project reproduces one scoped empirical slice:
@@ -138,27 +142,56 @@ Evaluated on 200 fresh test sequences ($T=256$, seed 0) comparing models trained
 
 ```
 ├── .github/workflows/ci.yml   # GitHub Actions CI running unit tests
-├── figures/
-│   ├── milestones.png         # Losses, accuracy, and probe curves
-│   ├── autopsy.png            # Weight autopsy heatmaps vs Eq 7/8 targets
-│   ├── fig4_left.png          # Figure 4 (left) fixed triggers vs random
-│   └── fig4_center.png        # Figure 4 (center) output distribution & OOD
-├── results/
-│   ├── diagnostic_construction.json # Reproducible construction diagnostic data
-│   └── fig4_variants.json     # Figure 4 variants metrics, OOD matrix, and trajectories
+├── figures/                   # Reproduction figures (milestones, autopsies, Fig 4 variants, freeze ablations, multi-seed)
+├── results/                   # Compact JSON metrics, OOD matrices, and evaluation records
 ├── src/
 │   ├── data.py                # Corpus loading, Laplace smoothing, batch generator
 │   ├── diagnostic_construction.py # Reproducible construction evaluation script
+│   ├── figures.py             # Matplotlib reproduction plotting scripts
+│   ├── freeze_train.py        # Freeze ablation training harness
 │   ├── model.py               # SimplifiedTransformer and analytic construction
+│   ├── multiseed_aggregate.py # Multi-seed metrics aggregation and statistics
 │   ├── probes.py              # Eq 9 recall probes and Eq 10 KL probe
-│   ├── train.py               # Pilot and 1000-step training loop
-│   └── figures.py             # Matplotlib reproduction plotting scripts
+│   └── train.py               # Pilot and 1000-step training loop
 ├── tests/
-│   ├── test_generator.py      # Gate A exact and statistical validation
+│   ├── test_attnmap.py        # Layer 2 attention map inspection tests
 │   ├── test_construction.py   # Gate B1 structural checks
-│   └── test_probes.py         # Probes and Figure 4 variant tests
+│   ├── test_freeze.py         # Freeze ablation tests
+│   ├── test_generator.py      # Gate A exact and statistical validation
+│   ├── test_kl.py             # Feedforward KL divergence probe tests
+│   ├── test_probes.py         # Probes and Figure 4 variant tests
+│   └── test_rawmle.py         # Raw-MLE regression pins and property tests
+├── EVIDENCE.txt               # Execution evidence, audit traces, and hardware runtime logs
 ├── LICENSE                    # MIT License (original code only)
-└── README.md
+├── paper_vs_study.md          # Side-by-side comparison between the paper and this reproduction
+├── PRESENTATION.md            # Developmental narrative brief and claim-to-evidence map
+├── README.md                  # This file
+├── REPORT.md                  # Comprehensive reproduction report and per-figure verdicts
+├── requirements.txt           # Environment and dependency record
+├── THIRD_PARTY_NOTICES.md     # Third-party corpus and paper code notices
+└── what_this_taught_me.md     # Technical retrospective and implementation takeaways
+```
+
+## Setup
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt   # records the environment the runs used; not fresh-install validated, see the file header
+curl -fSL -o input.txt https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt
+echo "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed  input.txt" | shasum -a 256 -c -
+```
+
+On Linux use `sha256sum -c -` for the last line.
+
+The following route was verified from scratch on Linux with Python 3.10 (all 25 tests pass):
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+pip install numpy==2.0.2 matplotlib==3.9.4
+curl -fSL -o input.txt https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt
+echo "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed  input.txt" | sha256sum -c -
+PYTHONPATH=. python -m unittest discover -s tests
 ```
 
 ## Regeneration Commands
