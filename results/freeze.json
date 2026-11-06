@@ -1,0 +1,41 @@
+{
+  "unfreeze_at": 300,
+  "arms": {
+    "freeze_wo2_rawmle": {
+      "loss": 2.9397730827331543,
+      "in_context_acc": 0.3847375214099884,
+      "recall_W_O2": 0.692307710647583,
+      "recall_W_K2": 0.3076923191547394,
+      "recall_W_K1": 0.023529411764705882,
+      "recall_W_K1_early": 0.06060606060606061,
+      "kl_pi_b_to_model": "not applicable (no FF layer)"
+    },
+    "freeze_wk1wk2_rawmle": {
+      "loss": 2.801558256149292,
+      "in_context_acc": 0.41731956601142883,
+      "recall_W_O2": 0.7538461685180664,
+      "recall_W_K2": 0.3076923191547394,
+      "recall_W_K1": 0.043137254901960784,
+      "recall_W_K1_early": 0.1111111111111111,
+      "kl_pi_b_to_model": "not applicable (no FF layer)"
+    },
+    "freeze_wk1_rawmle": {
+      "loss": 2.73205828666687,
+      "in_context_acc": 0.43326544761657715,
+      "recall_W_O2": 0.800000011920929,
+      "recall_W_K2": 0.3076923191547394,
+      "recall_W_K1": 0.0784313725490196,
+      "recall_W_K1_early": 0.1919191919191919,
+      "kl_pi_b_to_model": "not applicable (no FF layer)"
+    },
+    "freeze_wk2_rawmle": {
+      "loss": 2.8088691234588623,
+      "in_context_acc": 0.4132468104362488,
+      "recall_W_O2": 0.7538461685180664,
+      "recall_W_K2": 0.1230769231915474,
+      "recall_W_K1": 0.011764705882352941,
+      "recall_W_K1_early": 0.030303030303030304,
+      "kl_pi_b_to_model": "not applicable (no FF layer)"
+    }
+  }
+}

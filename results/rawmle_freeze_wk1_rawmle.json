@@ -1,0 +1,28 @@
+{
+  "variant": "freeze_wk1_rawmle",
+  "data_mode": "raw",
+  "d": 128,
+  "T": 256,
+  "seed": 0,
+  "num_iterations": 1000,
+  "unfreeze_at": 300,
+  "freeze_params": "wk1",
+  "final_loss": 2.73205828666687,
+  "final_in_context_acc": 0.43326544761657715,
+  "final_recall_W_O2": 0.800000011920929,
+  "final_recall_W_K2": 0.3076923191547394,
+  "final_recall_W_K1": 0.0784313725490196,
+  "final_recall_W_K1_early": 0.1919191919191919,
+  "kl_pi_b_to_model": "not applicable (no FF layer)",
+  "final_metrics": {
+    "loss": 2.73205828666687,
+    "in_context_acc": 0.43326544761657715,
+    "recall_W_O2": 0.800000011920929,
+    "recall_W_K2": 0.3076923191547394,
+    "recall_W_K1": 0.0784313725490196,
+    "recall_W_K1_early": 0.1919191919191919,
+    "kl_pi_b_to_model": "not applicable (no FF layer)"
+  },
+  "final_checkpoint": "checkpoints/rawmle_freeze_wk1_rawmle/checkpoint_1000.pt",
+  "final_checkpoint_sha256": "bf63c4d606d93d0e77ef1fa119a0d4dbe20e5eb9582a56251203f44cda2262fa"
+}
