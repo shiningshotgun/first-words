@@ -97,7 +97,11 @@ def compute_w_f_kl(
     """Compute KL divergence probe (eq 10) for feed-forward layer W_F.
     
     d_KL(W_F, pi_b) = 1/N sum_k d_KL( softmax(W_U W_F w_E(k)), pi_b(.|k) ).
+    Note: This is the paper-notation direction KL(model || pi_b), used only by
+    our construction diagnostic instrument and legacy smoothed evaluations.
     """
+    if W_F is None:
+        return float("nan")
     device = W_F.device
     # logits[k, j] = w_U[j]^T W_F w_E[k]
     # w_E @ W_F^T @ w_U^T has shape (N, N)
@@ -113,6 +117,45 @@ def compute_w_f_kl(
     return kl_per_token.mean().item()
 
 
+def compute_kl_pi_b_to_model(
+    W_F: Optional[torch.Tensor],
+    w_E: torch.Tensor,
+    w_U: torch.Tensor,
+    pi_b: np.ndarray,
+) -> float:
+    """Compute KL(pi_b(.|k) || softmax(W_U W_F w_E(k))) averaged over conditioning tokens k.
+    
+    Direction: KL(pi_b || model).
+    Discrepancy: The paper text (Section 5, Eq 10) writes d_KL(softmax, pi_b);
+    the authors' code (ihead_basic_main.py:105-115) computes F.kl_div(log_softmax(model), pi_b_rows),
+    which is KL(pi_b || softmax). This repo follows the authors' code for raw-MLE training metrics.
+    All computations are performed in float64.
+    Entries where pi_b[k, j] == 0 contribute exactly 0.0 to the divergence.
+    """
+    if W_F is None:
+        return float("nan")
+    # Evaluate probe on CPU to support exact float64 arithmetic across backends (e.g. MPS float64 limits)
+    cpu_dev = torch.device("cpu")
+    W_F_d = W_F.detach().cpu().to(dtype=torch.float64)
+    w_E_d = w_E.detach().cpu().to(dtype=torch.float64)
+    w_U_d = w_U.detach().cpu().to(dtype=torch.float64)
+
+    # Logits: w_E[k] @ W_F^T @ w_U^T has shape (N, N) where row k gives logits over next tokens j
+    logits = torch.matmul(torch.matmul(w_E_d, W_F_d.t()), w_U_d.t())
+    log_probs = F.log_softmax(logits, dim=-1)
+
+    pi_b_t = torch.tensor(pi_b, dtype=torch.float64, device=cpu_dev)
+    nonzero = pi_b_t > 0.0
+    safe_target = torch.where(nonzero, pi_b_t, torch.ones_like(pi_b_t))
+    kl_terms = torch.where(
+        nonzero,
+        pi_b_t * (torch.log(safe_target) - log_probs),
+        torch.zeros_like(pi_b_t),
+    )
+    kl_per_k = kl_terms.sum(dim=-1)
+    return float(kl_per_k.mean().item())
+
+
 def evaluate_all_probes(
     model: SimplifiedTransformer,
     pi_b: np.ndarray,
@@ -124,7 +167,10 @@ def evaluate_all_probes(
         w_k1_early = compute_w_k1_recall(model.W_K1, model.p, max_t=64)
         w_k2 = compute_w_k2_recall(model.W_K2, model.w_E, model.W_O1, model.W_V1)
         w_o2 = compute_w_o2_recall(model.W_O2, model.w_E, model.w_U, model.W_V2)
-        w_f_kl = compute_w_f_kl(model.W_F, model.w_E, model.w_U, pi_b)
+        if getattr(model, "final_ffn", True) and model.W_F is not None:
+            w_f_kl = compute_w_f_kl(model.W_F, model.w_E, model.w_U, pi_b)
+        else:
+            w_f_kl = None
         w_k2_q = (
             compute_w_k2_recall(model.W_K2, model.w_E, model.W_O1, model.W_V1, subset_Q=fixed_triggers)
             if fixed_triggers is not None
@@ -136,8 +182,9 @@ def evaluate_all_probes(
         "recall_W_K1_early": float(w_k1_early),
         "recall_W_K2": float(w_k2),
         "recall_W_O2": float(w_o2),
-        "kl_W_F": float(w_f_kl),
     }
+    if w_f_kl is not None:
+        res["kl_W_F"] = float(w_f_kl)
     if w_k2_q is not None:
         res["recall_W_K2_Q"] = float(w_k2_q)
     return res

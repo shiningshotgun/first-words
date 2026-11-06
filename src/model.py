@@ -16,11 +16,13 @@ class SimplifiedTransformer(nn.Module):
         N: int = 65,
         T: int = 256,
         seed: Optional[int] = None,
+        final_ffn: bool = True,
     ):
         super().__init__()
         self.d = d
         self.N = N
         self.T = T
+        self.final_ffn = final_ffn
 
         if seed is not None:
             torch.manual_seed(seed)
@@ -92,8 +94,11 @@ class SimplifiedTransformer(nn.Module):
             X2 = X1 + attn2_out
 
         # Linear feedforward layer (eq 2 / Section 4.2)
-        ff_out = torch.matmul(X2, self.W_F.t())
-        X3 = X2 + ff_out
+        if self.final_ffn:
+            ff_out = torch.matmul(X2, self.W_F.t())
+            X3 = X2 + ff_out
+        else:
+            X3 = X2
 
         # Unembedding: logits = X3 @ w_U^T
         logits = torch.matmul(X3, self.w_U.t())

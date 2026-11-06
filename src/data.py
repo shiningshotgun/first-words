@@ -47,6 +47,41 @@ def estimate_distributions(text: str, chars: List[str]) -> Tuple[np.ndarray, np.
     return pi_u, pi_b
 
 
+def estimate_distributions_raw(text: str, chars: List[str]) -> Tuple[np.ndarray, np.ndarray]:
+    """Estimate empirical unigram (pi_u) and bigram (pi_b) distributions using raw MLE counts.
+    
+    Formula:
+        pi_u(j) = count(j) / n
+        pi_b(j|i) = count(i, j) / n_i
+    Returns float64 arrays with exact row normalization (no smoothing).
+    """
+    N = len(chars)
+    char_to_idx = {ch: i for i, ch in enumerate(chars)}
+    indices = np.array([char_to_idx[c] for c in text], dtype=np.int64)
+    n = len(indices)
+
+    # Raw unigram counts and MLE
+    u_counts = np.bincount(indices, minlength=N).astype(np.float64)
+    pi_u = u_counts / float(n)
+    assert np.all(pi_u > 0.0), "All vocabulary tokens must appear at least once in corpus"
+    assert np.isclose(np.sum(pi_u), 1.0, atol=1e-12), "pi_u must sum to 1.0"
+
+    # Raw bigram counts and MLE
+    pair_counts = np.zeros((N, N), dtype=np.float64)
+    np.add.at(pair_counts, (indices[:-1], indices[1:]), 1.0)
+    row_sums = pair_counts.sum(axis=1)
+
+    for i in range(N):
+        assert row_sums[i] > 0.0, f"Token {chars[i]!r} has zero row sum"
+        assert np.any(pair_counts[i] > 0.0), f"Token {chars[i]!r} has no positive transition"
+
+    pi_b = pair_counts / row_sums[:, np.newaxis]
+    for i in range(N):
+        assert np.isclose(np.sum(pi_b[i]), 1.0, atol=1e-12), f"Row {i} must sum to 1.0"
+
+    return pi_u, pi_b
+
+
 class SyntheticBigramDataset:
     """Synthetic dataset generating sequences with random triggers and deterministic in-context outputs."""
 

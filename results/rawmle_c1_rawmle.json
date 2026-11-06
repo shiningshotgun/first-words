@@ -1,0 +1,33 @@
+{
+  "variant": "c1_rawmle",
+  "data_mode": "raw",
+  "d": 128,
+  "T": 256,
+  "seed": 0,
+  "num_iterations": 1000,
+  "final_metrics": {
+    "step": 999,
+    "loss": 2.3139028549194336,
+    "in_context_loss": 1.0689735412597656,
+    "in_context_acc": 0.7509090900421143,
+    "global_loss": 2.660386323928833,
+    "global_acc": 0.2456735372543335,
+    "recall_W_K1": 0.11764705882352941,
+    "recall_W_K1_early": 0.4603174603174603,
+    "recall_W_K2": 0.1538461595773697,
+    "recall_W_O2": 0.3076923191547394,
+    "kl_W_F": Infinity,
+    "kl_pi_b_to_model": 1.638836148329707,
+    "step_time_s": 0.9153938293457031,
+    "memory_mb": 403.28125
+  },
+  "final_checkpoint": "checkpoints/rawmle_c1_rawmle/checkpoint_1000.pt",
+  "final_checkpoint_sha256": "ba103759e079152daf256566c2428b8cdc742858b8517717183cf95549d8306b",
+  "final_loss": 2.3139028549194336,
+  "final_in_context_acc": 0.7509090900421143,
+  "final_kl_pi_b_to_model": 1.638836148329707,
+  "final_recall_W_O2": 0.3076923191547394,
+  "final_recall_W_K2": 0.1538461595773697,
+  "final_recall_W_K1": 0.11764705882352941,
+  "final_recall_W_K1_early": 0.4603174603174603
+}

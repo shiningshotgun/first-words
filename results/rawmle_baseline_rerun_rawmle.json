@@ -1,0 +1,33 @@
+{
+  "variant": "baseline_rerun_rawmle",
+  "data_mode": "raw",
+  "d": 128,
+  "T": 256,
+  "seed": 0,
+  "num_iterations": 1000,
+  "final_metrics": {
+    "step": 999,
+    "loss": 2.6742422580718994,
+    "in_context_loss": 2.5115966796875,
+    "in_context_acc": 0.5046091079711914,
+    "global_loss": 2.6646337509155273,
+    "global_acc": 0.2655559480190277,
+    "recall_W_K1": 0.11372549019607843,
+    "recall_W_K1_early": 0.4603174603174603,
+    "recall_W_K2": 0.1846153885126114,
+    "recall_W_O2": 0.6307692527770996,
+    "kl_W_F": Infinity,
+    "kl_pi_b_to_model": 1.3870307986847537,
+    "step_time_s": 2.544468879699707,
+    "memory_mb": 388.734375
+  },
+  "final_checkpoint": "checkpoints/rawmle_baseline_rerun_rawmle/checkpoint_1000.pt",
+  "final_checkpoint_sha256": "f3df02357e529f8f7e6283be461a320cf69f129cd903da2246c2e62c36adc7d7",
+  "final_loss": 2.6742422580718994,
+  "final_in_context_acc": 0.5046091079711914,
+  "final_kl_pi_b_to_model": 1.3870307986847537,
+  "final_recall_W_O2": 0.6307692527770996,
+  "final_recall_W_K2": 0.1846153885126114,
+  "final_recall_W_K1": 0.11372549019607843,
+  "final_recall_W_K1_early": 0.4603174603174603
+}
