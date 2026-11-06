@@ -1,0 +1,12 @@
+{
+  "variant": "c1_rawmle",
+  "seed": 1,
+  "checkpoint": "checkpoints/rawmle_c1_rawmle_seed1/checkpoint_1000.pt",
+  "checkpoint_sha256": "18906bbde7c096f1263fcaa9d1339ad95a2b225b1ac61c34d94405e1409a6b9a",
+  "eval_batch_uniform_sha256": "e33821ae47fd7820ebdc2f1bc6e3bee8135cd142fc19b3af2c111573fad28792",
+  "eval_batch_bigram_sha256": "d03b8fc0736499f863ebd995f873215d5bb5b34c4ce9136ed043f7bc72e897b2",
+  "ood_acc_test_uniform": 0.30910900235176086,
+  "ood_acc_test_bigram": 0.6972073912620544,
+  "evaluated_tokens_uniform": 8036,
+  "evaluated_tokens_bigram": 9561
+}

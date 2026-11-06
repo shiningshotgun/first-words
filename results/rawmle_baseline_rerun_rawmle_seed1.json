@@ -1,0 +1,33 @@
+{
+  "variant": "baseline_rerun_rawmle",
+  "data_mode": "raw",
+  "d": 128,
+  "T": 256,
+  "seed": 1,
+  "num_iterations": 1000,
+  "final_loss": 2.6612038612365723,
+  "final_in_context_acc": 0.5318940877914429,
+  "final_kl_pi_b_to_model": 1.3769423871148498,
+  "final_recall_W_O2": 0.7230769395828247,
+  "final_recall_W_K2": 0.26153847575187683,
+  "final_recall_W_K1": 0.09803921568627451,
+  "final_recall_W_K1_early": 0.36507936507936506,
+  "final_metrics": {
+    "step": 999,
+    "loss": 2.6612038612365723,
+    "in_context_loss": 2.3851518630981445,
+    "in_context_acc": 0.5318940877914429,
+    "global_loss": 2.669464111328125,
+    "global_acc": 0.2710932791233063,
+    "recall_W_K1": 0.09803921568627451,
+    "recall_W_K1_early": 0.36507936507936506,
+    "recall_W_K2": 0.26153847575187683,
+    "recall_W_O2": 0.7230769395828247,
+    "kl_W_F": Infinity,
+    "kl_pi_b_to_model": 1.3769423871148498,
+    "step_time_s": 0.6326429843902588,
+    "memory_mb": 434.546875
+  },
+  "final_checkpoint": "checkpoints/rawmle_baseline_rerun_rawmle_seed1/checkpoint_1000.pt",
+  "final_checkpoint_sha256": "6f723dc6fa71f22b5692924c7f3c3781c2c79f107a53c659d557f3bdb405a18f"
+}
