@@ -1,0 +1,317 @@
+EXECUTABLE: /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3
+TORCH_VERSION: 2.8.0
+Untracked logs+checkpoints count: 48
+
+=== Stage A.3: Pilot Run (baseline_rerun_rawmle) ===
+Speed: 0.93 it/s (1070.3 ms/it)
+Projected 1000-iter time: 1070.3s (17.84 min)
+Peak memory: 310.7 MB
+Within budget: True
+
+=== Stage A.3: Full Run (baseline_rerun_rawmle, seed 0) ===
+Wall time: 1557.1s (25.95 min)
+Speed: 0.64 it/s
+Peak memory: 388.7 MB
+Final loss: 2.6742
+Final in-context acc: 50.5%
+Final W_O2 recall: 63.1%
+Final W_K2 recall: 18.5%
+Final W_K1 recall: 11.4%
+Final kl_pi_b_to_model: 1.387
+Checkpoint saved: checkpoints/rawmle_baseline_rerun_rawmle/checkpoint_1000.pt
+Results JSON: results/rawmle_baseline_rerun_rawmle.json
+
+=== Stage A.3: Full Run (f1_rawmle, seed 0) ===
+Wall time: 1462.1s (24.37 min)
+Speed: 0.68 it/s
+Peak memory: 311.1 MB
+Final loss: 2.1740
+Final in-context acc: 98.3%
+Final W_O2 recall: 70.8%
+Final W_K2 recall: 3.1%
+Final W_K1 recall: 9.4%
+Final kl_pi_b_to_model: 1.408
+Checkpoint saved: checkpoints/rawmle_f1_rawmle/checkpoint_1000.pt
+Results JSON: results/rawmle_f1_rawmle.json
+
+=== Stage A.3: Full Run (f2_rawmle, seed 0) ===
+Wall time: 1799.7s (29.99 min)
+Speed: 0.56 it/s
+Peak memory: 278.3 MB
+Final loss: 2.6420
+Final in-context acc: 42.7%
+Final W_O2 recall: 40.0%
+Final W_K2 recall: 9.2%
+Final W_K1 recall: 8.6%
+Final kl_pi_b_to_model: 1.329
+Checkpoint saved: checkpoints/rawmle_f2_rawmle/checkpoint_1000.pt
+Results JSON: results/rawmle_f2_rawmle.json
+
+=== Stage A.3: Full Run (c1_rawmle, seed 0) ===
+Wall time: 1080.1s (18.00 min)
+Speed: 0.93 it/s
+Peak memory: 403.3 MB
+Final loss: 2.3139
+Final in-context acc: 75.1%
+Final W_O2 recall: 30.8%
+Final W_K2 recall: 15.4%
+Final W_K1 recall: 11.8%
+Final kl_pi_b_to_model: 1.639
+Checkpoint saved: checkpoints/rawmle_c1_rawmle/checkpoint_1000.pt
+Results JSON: results/rawmle_c1_rawmle.json
+
+=== Gate A Summary: Final Metrics ===
+Legacy Main (Smoothed): In-Ctx Acc = 49.27%, KL(W_F, pi_b) = 2.0625 nats
+baseline_rerun_rawmle : In-Ctx Acc = 50.46%, KL(pi_b||m) = 1.3870 nats
+f1_rawmle             : In-Ctx Acc = 98.25%, KL(pi_b||m) = 1.4082 nats
+f2_rawmle             : In-Ctx Acc = 42.74%, KL(pi_b||m) = 1.3289 nats
+c1_rawmle             : In-Ctx Acc = 75.09%, KL(pi_b||m) = 1.6388 nats
+R.1 Snapshot re-verification: PASS (all 49 entries bit-identical)
+
+=== R.2 Stage A Artifact Completeness ===
+PASS results/rawmle_baseline_rerun_rawmle.json exists
+PASS baseline_rerun_rawmle num_iterations==1000
+PASS baseline_rerun_rawmle has key final_loss
+PASS baseline_rerun_rawmle has key final_in_context_acc
+PASS baseline_rerun_rawmle has key final_kl_pi_b_to_model
+PASS baseline_rerun_rawmle has key final_recall_W_O2
+PASS baseline_rerun_rawmle has key final_recall_W_K2
+PASS baseline_rerun_rawmle has key final_recall_W_K1
+PASS baseline_rerun_rawmle has key final_recall_W_K1_early
+PASS baseline_rerun_rawmle checkpoint exists: checkpoints/rawmle_baseline_rerun_rawmle/checkpoint_1000.pt
+PASS baseline_rerun_rawmle checkpoint sha256 matches results JSON
+PASS logs/rawmle_baseline_rerun_rawmle.jsonl exists
+PASS logs/rawmle_baseline_rerun_rawmle.jsonl final logged step==999 (got 999)
+PASS logs/rawmle_baseline_rerun_rawmle.jsonl every logged kl_pi_b_to_model finite (201 lines)
+PASS logs/rawmle_baseline_rerun_rawmle.jsonl every logged loss finite
+PASS results/rawmle_f1_rawmle.json exists
+PASS f1_rawmle num_iterations==1000
+PASS f1_rawmle has key final_loss
+PASS f1_rawmle has key final_in_context_acc
+PASS f1_rawmle has key final_kl_pi_b_to_model
+PASS f1_rawmle has key final_recall_W_O2
+PASS f1_rawmle has key final_recall_W_K2
+PASS f1_rawmle has key final_recall_W_K1
+PASS f1_rawmle has key final_recall_W_K1_early
+PASS f1_rawmle checkpoint exists: checkpoints/rawmle_f1_rawmle/checkpoint_1000.pt
+PASS f1_rawmle checkpoint sha256 matches results JSON
+PASS logs/rawmle_f1_rawmle.jsonl exists
+PASS logs/rawmle_f1_rawmle.jsonl final logged step==999 (got 999)
+PASS logs/rawmle_f1_rawmle.jsonl every logged kl_pi_b_to_model finite (201 lines)
+PASS logs/rawmle_f1_rawmle.jsonl every logged loss finite
+PASS results/rawmle_f2_rawmle.json exists
+PASS f2_rawmle num_iterations==1000
+PASS f2_rawmle has key final_loss
+PASS f2_rawmle has key final_in_context_acc
+PASS f2_rawmle has key final_kl_pi_b_to_model
+PASS f2_rawmle has key final_recall_W_O2
+PASS f2_rawmle has key final_recall_W_K2
+PASS f2_rawmle has key final_recall_W_K1
+PASS f2_rawmle has key final_recall_W_K1_early
+PASS f2_rawmle checkpoint exists: checkpoints/rawmle_f2_rawmle/checkpoint_1000.pt
+PASS f2_rawmle checkpoint sha256 matches results JSON
+PASS logs/rawmle_f2_rawmle.jsonl exists
+PASS logs/rawmle_f2_rawmle.jsonl final logged step==999 (got 999)
+PASS logs/rawmle_f2_rawmle.jsonl every logged kl_pi_b_to_model finite (201 lines)
+PASS logs/rawmle_f2_rawmle.jsonl every logged loss finite
+PASS results/rawmle_c1_rawmle.json exists
+PASS c1_rawmle num_iterations==1000
+PASS c1_rawmle has key final_loss
+PASS c1_rawmle has key final_in_context_acc
+PASS c1_rawmle has key final_kl_pi_b_to_model
+PASS c1_rawmle has key final_recall_W_O2
+PASS c1_rawmle has key final_recall_W_K2
+PASS c1_rawmle has key final_recall_W_K1
+PASS c1_rawmle has key final_recall_W_K1_early
+PASS c1_rawmle checkpoint exists: checkpoints/rawmle_c1_rawmle/checkpoint_1000.pt
+PASS c1_rawmle checkpoint sha256 matches results JSON
+PASS logs/rawmle_c1_rawmle.jsonl exists
+PASS logs/rawmle_c1_rawmle.jsonl final logged step==999 (got 999)
+PASS logs/rawmle_c1_rawmle.jsonl every logged kl_pi_b_to_model finite (201 lines)
+PASS logs/rawmle_c1_rawmle.jsonl every logged loss finite
+PASS results/rawmle_baseline_rerun_rawmle_ood.json exists non-empty
+PASS results/fig4_variants_rawmle.json exists non-empty
+PASS figures/fig4_left_rawmle.png exists non-empty
+PASS figures/fig4_center_rawmle.png exists non-empty
+PASS figures/attn_map_baseline_rerun_rawmle.png exists non-empty
+OVERALL: PASS
+
+=== Smoothed vs Raw-MLE (final values, MEASURED) ===
+Legacy main (smoothed): in_context_acc=0.4927, kl_W_F=2.062461
+baseline_rerun_rawmle: final_in_context_acc=0.5046, final_kl_pi_b_to_model=1.387031
+f1_rawmle: final_in_context_acc=0.9825, final_kl_pi_b_to_model=1.408226
+f2_rawmle: final_in_context_acc=0.4274, final_kl_pi_b_to_model=1.328861
+c1_rawmle: final_in_context_acc=0.7509, final_kl_pi_b_to_model=1.638836
+Pre-commit A snapshot check: PASS (all 49 entries bit-identical)
+Commit A hash: 30b18fc
+
+=== Stage B.3: Freeze Pilot (freeze_wo2_rawmle) ===
+Speed: 1.87 it/s (535.5 ms/it)
+Projected 1000-iter time: 535.5s (8.93 min)
+
+=== Stage B Stop-on-Red Failure ===
+Command:
+cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/freeze_train.py --freeze wo2 --variant freeze_wo2_rawmle --iters 1000 --batch-size 512
+
+Exit code: 1
+
+Raw Output:
+=== Freeze Training: freeze_wo2_rawmle ===
+Freeze: wo2 | Unfreeze at step: 300 | Iters: 1000 | Pilot: False | Device: mps
+Step    0/1000 | Loss: 4.1850 | In-Ctx Acc: 1.1% | W_O2: 1.5% | W_K2: 1.5% | W_K1: 0.0%
+Step  100/1000 | Loss: 4.1678 | In-Ctx Acc: 1.4% | W_O2: 1.5% | W_K2: 1.5% | W_K1: 0.0%
+Step  200/1000 | Loss: 4.1765 | In-Ctx Acc: 1.3% | W_O2: 1.5% | W_K2: 1.5% | W_K1: 0.0%
+--- Unfreezing parameters at step 300 ---
+Step  300/1000 | Loss: 4.1795 | In-Ctx Acc: 1.1% | W_O2: 1.5% | W_K2: 1.5% | W_K1: 0.0%
+Step  400/1000 | Loss: 3.4204 | In-Ctx Acc: 26.2% | W_O2: 36.9% | W_K2: 13.8% | W_K1: 0.0%
+Step  500/1000 | Loss: 3.2237 | In-Ctx Acc: 28.6% | W_O2: 40.0% | W_K2: 21.5% | W_K1: 0.0%
+Step  600/1000 | Loss: 2.9202 | In-Ctx Acc: 39.2% | W_O2: 47.7% | W_K2: 29.2% | W_K1: 0.4%
+Step  700/1000 | Loss: 2.9994 | In-Ctx Acc: 36.5% | W_O2: 55.4% | W_K2: 32.3% | W_K1: 0.4%
+Step  800/1000 | Loss: 3.0566 | In-Ctx Acc: 35.8% | W_O2: 58.5% | W_K2: 35.4% | W_K1: 0.8%
+Step  900/1000 | Loss: 2.6504 | In-Ctx Acc: 44.8% | W_O2: 61.5% | W_K2: 35.4% | W_K1: 1.2%
+Traceback (most recent call last):
+  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 323, in <module>
+    main()
+  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 309, in main
+    train_freeze(
+  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 172, in train_freeze
+    loss.backward()
+  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/_tensor.py", line 647, in backward
+    torch.autograd.backward(
+  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/autograd/__init__.py", line 354, in backward
+    _engine_run_backward(
+  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/autograd/graph.py", line 829, in _engine_run_backward
+    return Variable._execution_engine.run_backward(
+RuntimeError: MPS backend out of memory (MPS allocated: 2.02 GiB, other allocations: 6.93 GiB, max allowed: 9.07 GiB). Tried to allocate 128.00 MiB on private pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).
+S.1 Snapshot re-verification: PASS (all 49 entries bit-identical)
+S.1 Process check: No model training or GPU-heavy processes active.
+
+=== S.2 Cleanup of Failed Arm Artifacts ===
+Fact: first freeze_wo2_rawmle attempt reached step 950/1000, MPS OOM during backward; artifacts deleted at user direction; arm to be rerun from step 0, unchanged, in S.3.
+S.2 listing before deletion:
+logs/rawmle_freeze_wo2_rawmle.jsonl (5393 bytes)
+checkpoints/rawmle_freeze_wo2_rawmle/checkpoint_0300.pt (1120601 bytes)
+results/rawmle_freeze_wo2_rawmle.json (absent)
+Absence verified.
+
+=== S.3 Rerun Stop-on-Red Failure ===
+Command:
+cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/freeze_train.py --freeze wo2 --variant freeze_wo2_rawmle --iters 1000 --batch-size 512
+
+Exit code: 1
+
+Raw Output:
+=== Freeze Training: freeze_wo2_rawmle ===
+Freeze: wo2 | Unfreeze at step: 300 | Iters: 1000 | Pilot: False | Device: mps
+Step    0/1000 | Loss: 4.1850 | In-Ctx Acc: 1.1% | W_O2: 1.5% | W_K2: 1.5% | W_K1: 0.0%
+Step  100/1000 | Loss: 4.1678 | In-Ctx Acc: 1.4% | W_O2: 1.5% | W_K2: 1.5% | W_K1: 0.0%
+Step  200/1000 | Loss: 4.1765 | In-Ctx Acc: 1.3% | W_O2: 1.5% | W_K2: 1.5% | W_K1: 0.0%
+--- Unfreezing parameters at step 300 ---
+Step  300/1000 | Loss: 4.1795 | In-Ctx Acc: 1.1% | W_O2: 1.5% | W_K2: 1.5% | W_K1: 0.0%
+Step  400/1000 | Loss: 3.4204 | In-Ctx Acc: 26.2% | W_O2: 36.9% | W_K2: 13.8% | W_K1: 0.0%
+Step  500/1000 | Loss: 3.2237 | In-Ctx Acc: 28.6% | W_O2: 40.0% | W_K2: 21.5% | W_K1: 0.0%
+Step  600/1000 | Loss: 2.9202 | In-Ctx Acc: 39.2% | W_O2: 47.7% | W_K2: 29.2% | W_K1: 0.4%
+Step  700/1000 | Loss: 2.9994 | In-Ctx Acc: 36.5% | W_O2: 55.4% | W_K2: 32.3% | W_K1: 0.4%
+Step  800/1000 | Loss: 3.0566 | In-Ctx Acc: 35.8% | W_O2: 58.5% | W_K2: 35.4% | W_K1: 0.8%
+Step  900/1000 | Loss: 2.6504 | In-Ctx Acc: 44.8% | W_O2: 61.5% | W_K2: 35.4% | W_K1: 1.2%
+Traceback (most recent call last):
+  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 323, in <module>
+    main()
+  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 309, in main
+    train_freeze(
+  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 172, in train_freeze
+    loss.backward()
+  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/_tensor.py", line 647, in backward
+    torch.autograd.backward(
+  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/autograd/__init__.py", line 354, in backward
+    _engine_run_backward(
+  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/autograd/graph.py", line 829, in _engine_run_backward
+    return Variable._execution_engine.run_backward(
+RuntimeError: MPS backend out of memory (MPS allocated: 2.02 GiB, other allocations: 6.93 GiB, max allowed: 9.07 GiB). Tried to allocate 128.00 MiB on private pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).
+S.1 Snapshot re-verification: PASS (all 49 entries bit-identical)
+S.1 Process check (v3): No model training or GPU-heavy processes active.
+fde8c628734caf755af835278a04043aeb9be79bef9d25a92bc745bcd45c2a39  src/freeze_train.py
+6819fc9fc026d809b68bef8758143d4f363038a3fb53121644e99f888b7cf9f6  tests/test_freeze.py
+
+=== S.2 Cleanup of Failed Arm Artifacts (v3) ===
+Facts: freeze_wo2_rawmle attempt 1 died after step 950/1000 and attempt 2 died at 901-999/1000, both MPS OOM during backward with identical reported allocation numbers; artifacts of both attempts deleted at user direction; arm rerun from step 0 in S.3 with the fixed-shape masked loss from S.1b.
+S.2 listing output before deletion:
+logs/rawmle_freeze_wo2_rawmle.jsonl (5356 bytes)
+checkpoints/rawmle_freeze_wo2_rawmle/checkpoint_0300.pt (1120601 bytes)
+results/rawmle_freeze_wo2_rawmle.json (absent)
+Absence verified.
+
+=== S.3 freeze_wo2_rawmle Completion ===
+Wall time: 432.99s (7.22 min)
+Speed: 2.31 it/s
+Final step: 999
+Final loss: 2.9398
+Final in-context acc: 38.5%
+Final W_O2 recall: 69.2%
+Final W_K2 recall: 30.8%
+Final W_K1 recall: 2.4%
+Results JSON: results/rawmle_freeze_wo2_rawmle.json
+
+=== S.4 freeze_wk1wk2_rawmle Completion ===
+Wall time: 411.56s (6.86 min)
+Speed: 2.43 it/s
+Final step: 999
+Final loss: 2.8016
+Final in-context acc: 41.7%
+Final W_O2 recall: 75.4%
+Final W_K2 recall: 30.8%
+Final W_K1 recall: 4.3%
+Results JSON: results/rawmle_freeze_wk1wk2_rawmle.json
+
+=== S.4 freeze_wk1_rawmle Completion ===
+Wall time: 626.17s (10.44 min)
+Speed: 1.60 it/s
+Final step: 999
+Final loss: 2.7321
+Final in-context acc: 43.3%
+Final W_O2 recall: 80.0%
+Final W_K2 recall: 30.8%
+Final W_K1 recall: 7.8%
+Results JSON: results/rawmle_freeze_wk1_rawmle.json
+
+=== S.4 freeze_wk2_rawmle Completion ===
+Wall time: 404.27s (6.74 min)
+Speed: 2.47 it/s
+Final step: 999
+Final loss: 2.8089
+Final in-context acc: 41.3%
+Final W_O2 recall: 75.4%
+Final W_K2 recall: 12.3%
+Final W_K1 recall: 1.2%
+Results JSON: results/rawmle_freeze_wk2_rawmle.json
+
+=== Gate B Recall Values (Pre-boundary step 300 vs Post-boundary final step 999) ===
+Arm: freeze_wo2_rawmle
+  Step 300: acc=1.1%, W_O2=1.5%, W_K2=1.5%, W_K1=0.0%
+  Step 999: acc=38.5%, W_O2=69.2%, W_K2=30.8%, W_K1=2.4%
+Arm: freeze_wk1wk2_rawmle
+  Step 300: acc=26.1%, W_O2=44.6%, W_K2=1.5%, W_K1=0.0%
+  Step 999: acc=41.7%, W_O2=75.4%, W_K2=30.8%, W_K1=4.3%
+Arm: freeze_wk1_rawmle
+  Step 300: acc=27.4%, W_O2=47.7%, W_K2=23.1%, W_K1=0.0%
+  Step 999: acc=43.3%, W_O2=80.0%, W_K2=30.8%, W_K1=7.8%
+Arm: freeze_wk2_rawmle
+  Step 300: acc=27.1%, W_O2=44.6%, W_K2=1.5%, W_K1=0.0%
+  Step 999: acc=41.3%, W_O2=75.4%, W_K2=12.3%, W_K1=1.2%
+Pre-commit B snapshot check: PASS (all paths verified)
+Commit B hash: 18d807a
+2a0f7c9dbaac552a07cd57f5689071e25349bb73bdb58002c560dad7431318da  src/multiseed_aggregate.py
+902985588c06c3d7460271a967943b75f0f9f71571902d9f66ae681c0c0d5df4  src/figures.py
+
+=== Gate C OOD Batch Hash Verification ===
+Seed 0:
+  eval_batch_uniform_sha256: baseline=a5186d67b3059cb85b5c480c2a1db5e3c9b6b22c71b78957310c25aaf32d293e == c1=a5186d67b3059cb85b5c480c2a1db5e3c9b6b22c71b78957310c25aaf32d293e (MATCH)
+  eval_batch_bigram_sha256:  baseline=460c258d3a9da8f0822d4a97bf9ac30c5566d17b1914368110831db7e8068f71 == c1=460c258d3a9da8f0822d4a97bf9ac30c5566d17b1914368110831db7e8068f71 (MATCH)
+Seed 1:
+  eval_batch_uniform_sha256: baseline=e33821ae47fd7820ebdc2f1bc6e3bee8135cd142fc19b3af2c111573fad28792 == c1=e33821ae47fd7820ebdc2f1bc6e3bee8135cd142fc19b3af2c111573fad28792 (MATCH)
+  eval_batch_bigram_sha256:  baseline=d03b8fc0736499f863ebd995f873215d5bb5b34c4ce9136ed043f7bc72e897b2 == c1=d03b8fc0736499f863ebd995f873215d5bb5b34c4ce9136ed043f7bc72e897b2 (MATCH)
+Seed 2:
+  eval_batch_uniform_sha256: baseline=4d9d9a2b24b095e11c177ef6219f05c40119b70da8f1690050d916e04eb38d19 == c1=4d9d9a2b24b095e11c177ef6219f05c40119b70da8f1690050d916e04eb38d19 (MATCH)
+  eval_batch_bigram_sha256:  baseline=8a79b159857ae43ff7e2c42729e27777b7b182e222a09e2dfc9117995e0973b4 == c1=8a79b159857ae43ff7e2c42729e27777b7b182e222a09e2dfc9117995e0973b4 (MATCH)
+Pre-commit C snapshot check: PASS (all paths verified)
+Commit C hash: 9967d4f

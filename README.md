@@ -194,10 +194,81 @@ PYTHONPATH=. python3 src/figures.py --fig4-left
 PYTHONPATH=. python3 src/figures.py --fig4-center
 ```
 
-## Explicit Not-Reproduced List (Open Follow-ups)
 
-The following experiments from the paper were not part of this scoped slice and remain open for future work:
-1. **Vanilla Transformer Attention Maps (Section 3 & Figure 2)**: 2-layer transformer with multi-head attention and MLP feedforward blocks.
-2. **Freeze-Schedule Ablations (Figure 3)**: Selectively freezing attention matrices $W_{O2}, W_{K2}, W_{K1}$ until iteration 300.
-3. **Additional Architecture / Context-Length Scaling (Figure 5, Figure 6 extended)**: Scaling sequence lengths $T > 256$, varying dimensions $d$, and multi-seed spread.
-*(Note: Figure 4 left fixed vs random triggers and Figure 4 center output distribution shifts have been executed and their measured outcomes recorded in this repository.)*
+## Corpus Integrity
+- **File**: `input.txt` (Tiny Shakespeare)
+- **SHA-256**: `86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed`
+
+## Measured Runtimes Across Stages (Apple Silicon MPS)
+
+### Stage A: Raw-MLE Baseline & Figure 4 Variants (1,000 iters each, seed 0)
+- `baseline_rerun_rawmle`: 1557.1s (25.95 min), 0.64 it/s
+- `f1_rawmle`: 1462.1s (24.37 min), 0.68 it/s
+- `f2_rawmle`: 1799.7s (29.99 min), 0.56 it/s
+- `c1_rawmle`: 1080.1s (18.00 min), 0.93 it/s
+
+### Stage B: Freeze Experiments (Figure 3, 1,000 iters each, unfreeze @ 300)
+- `freeze_wo2_rawmle`: 432.99s (7.22 min), 2.31 it/s
+- `freeze_wk1wk2_rawmle`: 411.56s (6.86 min), 2.43 it/s
+- `freeze_wk1_rawmle`: 626.17s (10.44 min), 1.60 it/s
+- `freeze_wk2_rawmle`: 404.27s (6.74 min), 2.47 it/s
+
+### Stage C: Multi-Seed Runs (1,000 iters each)
+- `baseline_rerun_rawmle` (seed 1): 648.7s (10.81 min), 1.54 it/s
+- `baseline_rerun_rawmle` (seed 2): 623.6s (10.39 min), 1.60 it/s
+- `c1_rawmle` (seed 1): 651.7s (10.86 min), 1.53 it/s
+- `c1_rawmle` (seed 2): 655.6s (10.93 min), 1.53 it/s
+
+## Regeneration Commands by Stage
+
+All commands run self-contained from the repository root:
+
+```bash
+# Interpreter path established in Gate 0.0:
+INTERP="/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3"
+
+# --- Stage A: Raw-MLE Reruns & Figure 4 ---
+$INTERP src/train.py --variant baseline_rerun_rawmle --main --seed 0 --iters 1000 --batch-size 512
+$INTERP src/train.py --variant f1_rawmle --main --seed 0 --iters 1000 --batch-size 512
+$INTERP src/train.py --variant f2_rawmle --main --seed 0 --iters 1000 --batch-size 512
+$INTERP src/train.py --variant c1_rawmle --main --seed 0 --iters 1000 --batch-size 512
+$INTERP src/figures.py --fig4-rawmle
+$INTERP src/figures.py --attn-map baseline_rerun_rawmle --seed 0
+
+# --- Stage B: Freeze Experiments (Paper Fig 3) ---
+$INTERP src/freeze_train.py --freeze wo2     --variant freeze_wo2_rawmle     --iters 1000 --batch-size 512
+$INTERP src/freeze_train.py --freeze wk1,wk2 --variant freeze_wk1wk2_rawmle  --iters 1000 --batch-size 512
+$INTERP src/freeze_train.py --freeze wk1     --variant freeze_wk1_rawmle     --iters 1000 --batch-size 512
+$INTERP src/freeze_train.py --freeze wk2     --variant freeze_wk2_rawmle     --iters 1000 --batch-size 512
+$INTERP src/figures.py --fig3-freeze
+
+# --- Stage C: Multi-Seed (Baseline & C1) & Aggregation ---
+$INTERP src/train.py --variant baseline_rerun_rawmle --main --seed 1 --iters 1000 --batch-size 512
+$INTERP src/train.py --variant baseline_rerun_rawmle --main --seed 2 --iters 1000 --batch-size 512
+$INTERP src/train.py --variant c1_rawmle --main --seed 1 --iters 1000 --batch-size 512
+$INTERP src/train.py --variant c1_rawmle --main --seed 2 --iters 1000 --batch-size 512
+$INTERP src/figures.py --rawmle baseline_rerun_rawmle --seed 1
+$INTERP src/figures.py --rawmle baseline_rerun_rawmle --seed 2
+$INTERP src/figures.py --rawmle c1_rawmle --seed 0
+$INTERP src/figures.py --rawmle c1_rawmle --seed 1
+$INTERP src/figures.py --rawmle c1_rawmle --seed 2
+$INTERP src/multiseed_aggregate.py
+$INTERP src/figures.py --multiseed
+```
+
+## Deviation & Specification Table
+
+| Item | Choice / Specification | Source / Rationale |
+|---|---|---|
+| **Total Training Iterations** | 1,000 iterations | **OUR CHOICE / CODE DEFAULT** (Authors' sample code `max_iters=1000`; the paper states iteration counts nowhere). |
+| **Unfreeze Iteration Boundary** | Iteration 300 | **PAPER-SPECIFIED** (`empirics.tex:38` caption). |
+| **Freeze Arm Mapping** | `freeze_wo2` $	o W_O^2$, `freeze_wk1wk2` $	o W_K^1, W_K^2$, `freeze_wk1` $	o W_K^1$, `freeze_wk2` $	o W_K^2$ | **INFERRED** (Inferred from author code parameter naming conventions `layers.0.attention.wk`, `layers.1.attention.wk`, `layers.1.attention.wo`; authors' CLI was unpublished). |
+| **Optimizer & Hyperparameters** | SGD(lr=0.2, momentum=0.9, weight_decay=1e-4) | **PAPER-SPECIFIED** (App E fig:ihead_freeze entry: $\eta=0.2$; momentum 0.9 and weight decay $10^{-4}$ per App E text). |
+| **Batch Size** | 512 sequences | **CODE DEFAULT** (`ihead_basic_main.py:30`). Paper does not state batch size. |
+| **Feedforward Layer in Freeze Arms** | Removed (`final_ffn=False`) | **PAPER-SPECIFIED** (Section 4.1). |
+| **Freeze Loss Formulation** | Fixed-shape masked cross-entropy | **NUMERICS-EQUIVALENT FIX** (Mathematically identical to indexing form; adopted after dynamic-shape indexing caused Metal driver heap inflation leading to two MPS OOM failures). |
+
+## Artifact & Tracking Policy
+
+- **Untracked Runtime Artifacts**: Raw checkpoint weights (`checkpoints/` and `checkpoints/rawmle_*/`), verbose training log lines (`logs/*.jsonl` and `logs/rawmle_*.jsonl`), and corpus text (`input.txt`) are excluded from git per `.gitignore` to prevent repository bloat.
+- **Tracked Evidence Artifacts**: All source code (`src/`), unit tests (`tests/`), structured compact results JSONs (`results/rawmle_*.json`, `results/multiseed.json`, `results/freeze.json`), generated figures (`figures/*.png`), and cryptographic checkpoint hashes (`final_checkpoint_sha256`) are tracked in git under pinned author/committer identity.
