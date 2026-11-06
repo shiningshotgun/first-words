@@ -1,4 +1,4 @@
-EXECUTABLE: /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3
+EXECUTABLE: .venv/bin/python3
 TORCH_VERSION: 2.8.0
 Untracked logs+checkpoints count: 48
 
@@ -151,7 +151,7 @@ Projected 1000-iter time: 535.5s (8.93 min)
 
 === Stage B Stop-on-Red Failure ===
 Command:
-cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/freeze_train.py --freeze wo2 --variant freeze_wo2_rawmle --iters 1000 --batch-size 512
+cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && python3 src/freeze_train.py --freeze wo2 --variant freeze_wo2_rawmle --iters 1000 --batch-size 512
 
 Exit code: 1
 
@@ -170,17 +170,17 @@ Step  700/1000 | Loss: 2.9994 | In-Ctx Acc: 36.5% | W_O2: 55.4% | W_K2: 32.3% | 
 Step  800/1000 | Loss: 3.0566 | In-Ctx Acc: 35.8% | W_O2: 58.5% | W_K2: 35.4% | W_K1: 0.8%
 Step  900/1000 | Loss: 2.6504 | In-Ctx Acc: 44.8% | W_O2: 61.5% | W_K2: 35.4% | W_K1: 1.2%
 Traceback (most recent call last):
-  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 323, in <module>
+  File "./src/freeze_train.py", line 323, in <module>
     main()
-  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 309, in main
+  File "./src/freeze_train.py", line 309, in main
     train_freeze(
-  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 172, in train_freeze
+  File "./src/freeze_train.py", line 172, in train_freeze
     loss.backward()
-  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/_tensor.py", line 647, in backward
+  File ".venv/lib/python3.9/site-packages/torch/_tensor.py", line 647, in backward
     torch.autograd.backward(
-  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/autograd/__init__.py", line 354, in backward
+  File ".venv/lib/python3.9/site-packages/torch/autograd/__init__.py", line 354, in backward
     _engine_run_backward(
-  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/autograd/graph.py", line 829, in _engine_run_backward
+  File ".venv/lib/python3.9/site-packages/torch/autograd/graph.py", line 829, in _engine_run_backward
     return Variable._execution_engine.run_backward(
 RuntimeError: MPS backend out of memory (MPS allocated: 2.02 GiB, other allocations: 6.93 GiB, max allowed: 9.07 GiB). Tried to allocate 128.00 MiB on private pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).
 S.1 Snapshot re-verification: PASS (all 49 entries bit-identical)
@@ -196,7 +196,7 @@ Absence verified.
 
 === S.3 Rerun Stop-on-Red Failure ===
 Command:
-cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/freeze_train.py --freeze wo2 --variant freeze_wo2_rawmle --iters 1000 --batch-size 512
+cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && python3 src/freeze_train.py --freeze wo2 --variant freeze_wo2_rawmle --iters 1000 --batch-size 512
 
 Exit code: 1
 
@@ -215,17 +215,17 @@ Step  700/1000 | Loss: 2.9994 | In-Ctx Acc: 36.5% | W_O2: 55.4% | W_K2: 32.3% | 
 Step  800/1000 | Loss: 3.0566 | In-Ctx Acc: 35.8% | W_O2: 58.5% | W_K2: 35.4% | W_K1: 0.8%
 Step  900/1000 | Loss: 2.6504 | In-Ctx Acc: 44.8% | W_O2: 61.5% | W_K2: 35.4% | W_K1: 1.2%
 Traceback (most recent call last):
-  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 323, in <module>
+  File "./src/freeze_train.py", line 323, in <module>
     main()
-  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 309, in main
+  File "./src/freeze_train.py", line 309, in main
     train_freeze(
-  File "/Users/amarmehta/Documents/research_repro/first-words/src/freeze_train.py", line 172, in train_freeze
+  File "./src/freeze_train.py", line 172, in train_freeze
     loss.backward()
-  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/_tensor.py", line 647, in backward
+  File ".venv/lib/python3.9/site-packages/torch/_tensor.py", line 647, in backward
     torch.autograd.backward(
-  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/autograd/__init__.py", line 354, in backward
+  File ".venv/lib/python3.9/site-packages/torch/autograd/__init__.py", line 354, in backward
     _engine_run_backward(
-  File "/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/lib/python3.9/site-packages/torch/autograd/graph.py", line 829, in _engine_run_backward
+  File ".venv/lib/python3.9/site-packages/torch/autograd/graph.py", line 829, in _engine_run_backward
     return Variable._execution_engine.run_backward(
 RuntimeError: MPS backend out of memory (MPS allocated: 2.02 GiB, other allocations: 6.93 GiB, max allowed: 9.07 GiB). Tried to allocate 128.00 MiB on private pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).
 S.1 Snapshot re-verification: PASS (all 49 entries bit-identical)

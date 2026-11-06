@@ -224,8 +224,8 @@ PYTHONPATH=. python3 src/figures.py --fig4-center
 All commands run self-contained from the repository root:
 
 ```bash
-# Interpreter path established in Gate 0.0:
-INTERP="/Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3"
+# Interpreter path (or active virtualenv python):
+INTERP="python3"
 
 # --- Stage A: Raw-MLE Reruns & Figure 4 ---
 $INTERP src/train.py --variant baseline_rerun_rawmle --main --seed 0 --iters 1000 --batch-size 512

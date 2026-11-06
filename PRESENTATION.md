@@ -33,7 +33,7 @@ The visual progression below follows the developmental timeline of the transform
 - **Source Artifacts**: `results/multiseed.json`, generated from the 6 training JSONs and 6 OOD evaluation JSONs across seeds 0, 1, 2.
 - **Regeneration Command**:
   ```bash
-  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/figures.py --multiseed
+  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && python3 src/figures.py --multiseed
   ```
 - **Output File**: `figures/multiseed.png`
 
@@ -42,7 +42,7 @@ The visual progression below follows the developmental timeline of the transform
 - **Source Artifacts**: `results/fig4_variants_rawmle.json`, derived from `results/rawmle_baseline_rerun_rawmle.json`, `results/rawmle_f1_rawmle.json`, `results/rawmle_f2_rawmle.json`, `results/rawmle_c1_rawmle.json`.
 - **Regeneration Command**:
   ```bash
-  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/figures.py --fig4-rawmle
+  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && python3 src/figures.py --fig4-rawmle
   ```
 - **Output Files**: `figures/fig4_left_rawmle.png`, `figures/fig4_center_rawmle.png`
 
@@ -51,7 +51,7 @@ The visual progression below follows the developmental timeline of the transform
 - **Source Artifacts**: `results/rawmle_baseline_rerun_rawmle*_ood.json` and `results/rawmle_c1_rawmle*_ood.json`.
 - **Regeneration Command**:
   ```bash
-  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/figures.py --multiseed
+  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && python3 src/figures.py --multiseed
   ```
 - **Output File**: `figures/ood_matrices_multiseed.png`
 
@@ -60,7 +60,7 @@ The visual progression below follows the developmental timeline of the transform
 - **Source Artifacts**: Checkpoint `checkpoints/rawmle_baseline_rerun_rawmle/checkpoint_1000.pt`.
 - **Regeneration Command**:
   ```bash
-  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/figures.py --attn-map baseline_rerun_rawmle --seed 0
+  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && python3 src/figures.py --attn-map baseline_rerun_rawmle --seed 0
   ```
 - **Output File**: `figures/attn_map_baseline_rerun_rawmle.png`
 
@@ -69,7 +69,7 @@ The visual progression below follows the developmental timeline of the transform
 - **Source Artifact**: `results/diagnostic_construction.json`.
 - **Regeneration Command** (Documentation only; do not re-run):
   ```bash
-  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/figures.py --autopsy
+  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && python3 src/figures.py --autopsy
   ```
 - **Output File**: `figures/autopsy.png`
 
@@ -78,7 +78,7 @@ The visual progression below follows the developmental timeline of the transform
 - **Source Artifacts**: `results/freeze.json`, logs `logs/rawmle_freeze_*_rawmle.jsonl`.
 - **Regeneration Command**:
   ```bash
-  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && /Users/amarmehta/Documents/research_repro/pizza-o-clock/.venv/bin/python3 src/figures.py --fig3-freeze
+  cd ~/Documents/research_repro/first-words && export PYTHONPATH=. && python3 src/figures.py --fig3-freeze
   ```
 - **Output File**: `figures/freeze_probes.png`
 
